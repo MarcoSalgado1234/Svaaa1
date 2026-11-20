@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import card %}
+{% block title %}Catálogo{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Catálogo</h1><p class="muted">Filtra por marca, categoría, origen y precio.</p></div>
+  <div class="layout">
+    <form class="filters" method="get">
+      <h3>Filtros</h3>
+      <label class="f">Buscar</label>
+      <input name="q" value="{{ f.q }}" placeholder="Nombre o marca">
+      <label class="f">Categoría</label>
+      <select name="categoria"><option value="">Todas</option>
+        {% for c in categorias %}<option value="{{ c.id_categoria }}" {{ 'selected' if f.categoria==c.id_categoria }}>{{ c.nombre }}</option>{% endfor %}</select>
+      <label class="f">Marca</label>
+      <select name="marca"><option value="">Todas</option>
+        {% for m in marcas %}<option value="{{ m.id_marca }}" {{ 'selected' if f.marca==m.id_marca }}>{{ m.nombre }}</option>{% endfor %}</select>
+      <label class="f">Origen</label>
+      <select name="origen"><option value="">Todos</option>
+        {% for o in origenes %}<option value="{{ o.id_origen }}" {{ 'selected' if f.origen==o.id_origen }}>{{ o.nombre }}</option>{% endfor %}</select>
+      <label class="f">Precio por pieza</label>
+      <div class="row2">
+        <input type="number" name="pmin" min="0" step="1" placeholder="Mín" value="{{ f.pmin|int if f.pmin is not none else '' }}">
+        <input type="number" name="pmax" min="0" step="1" placeholder="Máx" value="{{ f.pmax|int if f.pmax is not none else '' }}">
+      </div>
+      <label class="f">Ordenar por</label>
+      <select name="orden">
+        <option value="nombre" {{ 'selected' if f.orden=='nombre' }}>Nombre</option>
+        <option value="precio_asc" {{ 'selected' if f.orden=='precio_asc' }}>Precio: menor a mayor</option>
+        <option value="precio_desc" {{ 'selected' if f.orden=='precio_desc' }}>Precio: mayor a menor</option>
+        <option value="graduacion" {{ 'selected' if f.orden=='graduacion' }}>Mayor graduación</option>
+      </select>
+      <button class="btn btn-block mt">Aplicar filtros</button>
+      <a class="btn btn-outline btn-block btn-sm" style="margin-top:.5rem" href="{{ url_for('catalogo') }}">Limpiar</a>
+    </form>
+    <div>
+      <div class="results-bar"><b>{{ productos|length }} producto{{ '' if productos|length==1 else 's' }}</b>
+        <a href="{{ url_for('comparar') }}" class="btn btn-outline btn-sm">⚖️ Ir al comparador</a></div>
+      {% if productos %}
+      <div class="grid">{% for p in productos %}{{ card(p, promos) }}{% endfor %}</div>
+      {% else %}
+      <div class="empty"><h3>Sin resultados</h3><p class="muted">Prueba con otros filtros.</p></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import card %}
+{% block title %}{{ p.nombre }}{% endblock %}
+{% block content %}
+<div class="container">
+  <p class="small muted mt"><a href="{{ url_for('catalogo') }}">Catálogo</a> / {{ p.categoria }} / {{ p.nombre }}</p>
+  <div class="product">
+    <div class="art">{{ p.emoji }}</div>
+    <div>
+      <span class="brand muted small" style="letter-spacing:.12em;text-transform:uppercase;font-weight:700">{{ p.marca }}</span>
+      <h1>{{ p.nombre }}</h1>
+      <div class="tags mt">
+        <span class="tag amber">{{ p.categoria }}</span>
+        {% if p.es_artesanal %}<span class="tag green">Artesanal</span>{% endif %}
+        {% if p.stock > 0 %}<span class="tag green">{{ p.stock }} pzas disponibles</span>{% else %}<span class="tag red">Agotado</span>{% endif %}
+        {% if p.stock > 0 and p.stock <= p.stock_minimo %}<span class="tag red">¡Últimas piezas!</span>{% endif %}
+      </div>
+      <p class="mt">{{ p.descripcion }}</p>
+      <table class="spec">
+        <tr><td>Origen</td><td>{{ p.origen }}</td></tr>
+        <tr><td>Presentación</td><td>{{ p.presentacion }}</td></tr>
+        <tr><td>Graduación alcohólica</td><td>{{ p.graduacion }}° GL</td></tr>
+        <tr><td>Piezas por caja</td><td>{{ p.piezas_por_caja }}</td></tr>
+        <tr><td>Existencia</td><td>{{ p.stock }} piezas</td></tr>
+      </table>
+
+      <div class="buybox">
+        <div class="tiers">
+          <div class="tier"><b>{{ p.precio|money }}</b><span>Pieza</span></div>
+          <div class="tier"><b>{{ p.precio_caja|money }}</b><span>Caja (1-2)</span></div>
+          <div class="tier hl"><b>{{ p.precio_caja_mayoreo|money }}</b><span>Caja mayoreo (3+)</span></div>
+        </div>
+        {% if promos[p.id_categoria] %}<div class="notice">🎉 Promoción vigente: {{ promos[p.id_categoria]|int }}% de descuento en piezas sueltas de esta categoría.</div>{% endif %}
+        {% if p.stock > 0 %}
+        <form method="post" action="{{ url_for('carrito_agregar') }}" class="qty">
+          <input type="hidden" name="id" value="{{ p.id_producto }}">
+          <select name="tipo" style="width:auto"><option value="pieza">Piezas</option><option value="caja">Cajas</option></select>
+          <input type="number" name="cant" value="1" min="1" max="999">
+          <button class="btn">🛒 Agregar al carrito</button>
+          <a class="btn btn-outline" href="{{ url_for('comparar_agregar', {pid: p.id_producto}) }}">⚖️ Comparar</a>
+        </form>
+        <p class="small muted mt">Agrega 3 o más cajas y el precio de mayoreo se aplica automáticamente.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% if similares %}
+  <section class="block"><div class="section-head"><h2>Productos similares</h2></div>
+    <div class="grid">{% for s in similares %}{{ card(s, promos) }}{% endfor %}</div></section>
+  {% endif %}
+</div>
+{% endblock %}

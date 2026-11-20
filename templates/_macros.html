@@ -1,0 +1,31 @@
+{% macro card(p, promos={}) %}
+<article class="card">
+  <a href="{{ url_for('producto', {pid: p.id_producto}) }}" class="thumb">
+    {{ p.emoji }}
+    {% if p.stock <= 0 %}<span class="ribbon" style="background:#555">Agotado</span>
+    {% elif promos[p.id_categoria] and p.precio %}<span class="ribbon">-{{ promos[p.id_categoria]|int }}%</span>
+    {% elif p.es_artesanal %}<span class="ribbon" style="background:var(--amber);color:var(--dark)">Artesanal</span>{% endif %}
+  </a>
+  <div class="body">
+    <span class="brand">{{ p.marca }}</span>
+    <h3><a href="{{ url_for('producto', {pid: p.id_producto}) }}">{{ p.nombre }}</a></h3>
+    <div class="tags">
+      <span class="tag">{{ p.origen }}</span>
+      {% if p.graduacion > 0 %}<span class="tag red">{{ p.graduacion }}° GL</span>{% endif %}
+      <span class="tag">{{ p.presentacion }}</span>
+    </div>
+    <div class="price">{{ p.precio|money }} <small>/ pieza</small></div>
+    <div class="small muted">Caja {{ p.piezas_por_caja }} pzas: {{ p.precio_caja|money }}</div>
+    <div class="actions">
+      {% if p.stock > 0 %}
+      <form method="post" action="{{ url_for('carrito_agregar') }}">
+        <input type="hidden" name="id" value="{{ p.id_producto }}">
+        <input type="hidden" name="tipo" value="pieza"><input type="hidden" name="cant" value="1">
+        <button class="btn btn-sm btn-block">+ Agregar</button>
+      </form>
+      {% endif %}
+      <a class="btn btn-sm btn-outline" href="{{ url_for('comparar_agregar', {pid: p.id_producto}) }}" title="Comparar">⚖️</a>
+    </div>
+  </div>
+</article>
+{% endmacro %}

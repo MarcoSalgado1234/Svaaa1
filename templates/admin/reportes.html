@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Reportes · Admin{% endblock %}
+{% block content %}
+{% macro barras(rows, label, value, fmt_money=True) %}
+  {% set mx = (rows|map({attribute:value})|map('float')|max) if rows else 1 %}
+  {% for r in rows %}
+  <div class="bar-row"><span>{{ r[label] }}</span><div class="bar"><i style="width:{{ ((r[value]|float) / (mx or 1) * 100)|round }}%"></i></div>
+    <b>{{ r[value]|money if fmt_money else r[value]|int }}</b></div>
+  {% else %}<p class="muted">Sin datos todavía.</p>{% endfor %}
+{% endmacro %}
+<div class="container" style="padding-bottom:3rem">
+  <div class="page-head" style="padding-bottom:0"><h1>Reportes estratégicos</h1></div>
+  {% include 'admin/_nav.html' %}
+  <div class="kpis">
+    <div class="kpi"><span>Ventas con precio mayoreo</span><b>{{ mayoreo.total|money }}</b></div>
+    <div class="kpi"><span>Pedidos con mayoreo</span><b>{{ mayoreo.n }}</b></div>
+  </div>
+  <div class="two">
+    <div class="panel"><h3 class="mb">Ventas por día (últimos 30 días)</h3>
+      {{ barras(por_dia, 'dia', 'total') }}</div>
+    <div class="panel"><h3 class="mb">Ingresos por categoría</h3>{{ barras(por_cat, 'nombre', 'ingreso') }}</div>
+    <div class="panel"><h3 class="mb">Productos más vendidos (piezas)</h3>{{ barras(top, 'nombre', 'piezas', False) }}</div>
+    <div class="panel"><h3 class="mb">Rotación de inventario</h3>
+      <div class="table-wrap"><table class="t"><tr><th>Producto</th><th>Vendidas</th><th>Existencia</th></tr>
+        {% for r in rotacion %}<tr><td>{{ r.nombre }}</td><td>{{ r.vendidas|int }}</td><td>{{ r.stock }}</td></tr>{% endfor %}</table></div></div>
+  </div>
+</div>
+{% endblock %}

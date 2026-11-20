@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Finalizar pedido{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Finalizar pedido</h1></div>
+  <form method="post" class="cart-layout">
+    <div style="display:grid;gap:1.2rem">
+      <div class="panel">
+        <h3 class="mb">1 · ¿Cómo quieres recibir tu pedido?</h3>
+        <div class="choice">
+          <label><input type="radio" name="modalidad" value="apartado" {{ 'checked' if form.get('modalidad','apartado')=='apartado' }}> <b>🏪 Apartar y recoger en tienda</b><br><span class="small muted">Sin costo. Lo tendremos listo.</span></label>
+          <label><input type="radio" name="modalidad" value="domicilio" {{ 'checked' if form.get('modalidad')=='domicilio' }}> <b>🛵 Entrega a domicilio</b><br><span class="small muted">Solo zonas con cobertura.</span></label>
+        </div>
+        <div id="boxDomicilio" class="hidden mt">
+          <label class="f">Dirección de entrega</label>
+          <select name="direccion_id" id="direccionSel">
+            {% for d in direcciones %}<option value="{{ d.id_direccion }}" data-cp="{{ d.codigo_postal }}">{{ d.calle }} {{ d.numero }}, {{ d.colonia }} (C.P. {{ d.codigo_postal }})</option>{% endfor %}
+            <option value="nueva" {{ 'selected' if not direcciones }}>+ Nueva dirección</option>
+          </select>
+          <div id="nuevaDir" class="form-grid mt {{ 'hidden' if direcciones }}">
+            <div><label class="f">Calle</label><input name="calle" value="{{ form.get('calle','') }}"></div>
+            <div><label class="f">Número</label><input name="numero" value="{{ form.get('numero','') }}"></div>
+            <div><label class="f">Colonia</label><input name="colonia" value="{{ form.get('colonia','') }}"></div>
+            <div><label class="f">Código postal</label><input name="codigo_postal" id="cpInput" maxlength="5" value="{{ form.get('codigo_postal','') }}"></div>
+            <div class="full"><label class="f">Referencias</label><input name="referencias" value="{{ form.get('referencias','') }}"></div>
+          </div>
+          <div id="cobMsg" class="notice">Valida tu cobertura.</div>
+          <p class="small muted">Zonas con cobertura: {% for z in zonas %}{{ z.nombre }} ({{ z.codigo_postal }}){{ ', ' if not loop.last }}{% endfor %}</p>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 class="mb">2 · Método de pago</h3>
+        <div class="choice">
+          <label><input type="radio" name="metodo_pago" value="efectivo" checked> <b>💵 Efectivo</b><br><span class="small muted">En tienda o contra entrega.</span></label>
+          <label><input type="radio" name="metodo_pago" value="transferencia"> <b>🏦 Transferencia</b><br><span class="small muted">Te mostraremos los datos al confirmar.</span></label>
+        </div>
+        {% if c.lineas|selectattr('es_alcohol')|list %}
+        <div class="checks mt"><label><input type="checkbox" name="mayor_edad" required> Confirmo que soy mayor de 18 años. Mi identificación podrá ser solicitada al recibir/recoger.</label></div>
+        {% endif %}
+      </div>
+    </div>
+    <aside class="panel summary">
+      <h3 class="mb">Tu pedido</h3>
+      {% for l in c.lineas %}<div class="r small"><span>{{ l.cant }}× {{ l.p.nombre }} ({{ l.tipo }})</span><span>{{ l.importe|money }}</span></div>{% endfor %}
+      <hr style="border:0;border-top:1px solid var(--line);margin:.6rem 0">
+      <div class="r"><span>Subtotal</span><span>{{ c.subtotal|money }}</span></div>
+      <div class="r" style="color:var(--green)"><span>Descuentos</span><span>-{{ c.descuento|money }}</span></div>
+      <div class="r"><span>Envío</span><span id="envioMonto">$0.00</span></div>
+      <div class="r tot"><span>Total</span><span id="totalMonto" data-base="{{ c.total }}">{{ c.total|money }}</span></div>
+      <button class="btn btn-block mt">Confirmar pedido</button>
+    </aside>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Comparador{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Comparador de productos</h1><p class="muted">Compara hasta 3 artículos al mismo tiempo.</p></div>
+  {% if productos %}
+  <div class="compare">
+    {% for p in productos %}
+    <div class="col">
+      <div class="e">{{ p.emoji }}</div>
+      <h3>{{ p.nombre }}</h3><p class="muted small">{{ p.marca }}</p>
+      <dl class="mt">
+        <div><dt>Categoría</dt><dd>{{ p.categoria }}</dd></div>
+        <div><dt>Origen</dt><dd>{{ p.origen }}</dd></div>
+        <div><dt>Presentación</dt><dd>{{ p.presentacion }}</dd></div>
+        <div><dt>Graduación</dt><dd>{{ p.graduacion }}° GL</dd></div>
+        <div><dt>Precio pieza</dt><dd><b>{{ p.precio|money }}</b></dd></div>
+        <div><dt>Caja ({{ p.piezas_por_caja }})</dt><dd>{{ p.precio_caja|money }}</dd></div>
+        <div><dt>Mayoreo (3+)</dt><dd>{{ p.precio_caja_mayoreo|money }}</dd></div>
+        <div><dt>Existencia</dt><dd>{{ p.stock }} pzas</dd></div>
+      </dl>
+      <div class="mt" style="display:grid;gap:.4rem">
+        <a class="btn btn-sm" href="{{ url_for('producto', {pid: p.id_producto}) }}">Ver ficha</a>
+        <a class="btn btn-sm btn-outline" href="{{ url_for('comparar_quitar', {pid: p.id_producto}) }}">Quitar</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty"><h3>Aún no hay productos para comparar</h3>
+    <p class="muted mb">Usa el botón ⚖️ en el catálogo.</p><a class="btn" href="{{ url_for('catalogo') }}">Ir al catálogo</a></div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Registro{% endblock %}
+{% block content %}
+<div class="container auth">
+  <div class="panel">
+    <h2>Crea tu cuenta</h2>
+    <p class="muted mb">Solo mayores de 18 años.</p>
+    <form method="post">
+      <label class="f">Nombre completo</label><input name="nombre" required value="{{ form.get('nombre','') }}">
+      <label class="f">Correo electrónico</label><input type="email" name="email" required value="{{ form.get('email','') }}">
+      <label class="f">Teléfono</label><input name="telefono" value="{{ form.get('telefono','') }}">
+      <label class="f">Fecha de nacimiento</label><input type="date" name="fecha_nacimiento" required value="{{ form.get('fecha_nacimiento','') }}">
+      <label class="f">Contraseña (mín. 8 caracteres)</label><input type="password" name="password" minlength="8" required>
+      <div class="checks">
+        <label><input type="checkbox" name="mayor_edad" required> Declaro que soy mayor de 18 años y acepto el aviso de privacidad.</label>
+        <label><input type="checkbox" name="mayorista"> Soy comprador mayorista / revendedor.</label>
+      </div>
+      <button class="btn btn-block mt">Registrarme</button>
+    </form>
+    <p class="small center mt muted">¿Ya tienes cuenta? <a href="{{ url_for('login') }}"><b>Inicia sesión</b></a></p>
+  </div>
+</div>
+{% endblock %}

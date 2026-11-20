@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Inventario · Admin{% endblock %}
+{% block content %}
+<div class="container" style="padding-bottom:3rem">
+  <div class="page-head" style="padding-bottom:0"><h1>Control de inventario</h1></div>
+  {% include 'admin/_nav.html' %}
+  <div class="panel table-wrap"><table class="t">
+    <tr><th>Producto</th><th>Existencia</th><th>Mínimo</th><th>Estado</th><th>Ajustar (+ entrada / − salida)</th></tr>
+    {% for p in productos %}<tr>
+      <td>{{ p.emoji }} <b>{{ p.nombre }}</b></td><td><b>{{ p.stock }}</b> pzas<br><span class="small muted">≈ {{ (p.stock / p.piezas_por_caja)|round(1) }} cajas</span></td><td>{{ p.stock_minimo }}</td>
+      <td>{% if p.stock == 0 %}<span class="tag red">Agotado</span>{% elif p.stock <= p.stock_minimo %}<span class="tag amber">Stock bajo</span>{% else %}<span class="tag green">OK</span>{% endif %}</td>
+      <td><form method="post" class="inline-form"><input type="hidden" name="id" value="{{ p.id_producto }}">
+        <input type="number" name="delta" placeholder="Ej. 24 o -6" style="width:120px" required><button class="btn btn-sm">Aplicar</button></form></td></tr>{% endfor %}
+  </table></div>
+</div>
+{% endblock %}

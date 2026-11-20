@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Pedidos · Admin{% endblock %}
+{% block content %}
+<div class="container" style="padding-bottom:3rem">
+  <div class="page-head" style="padding-bottom:0"><h1>Gestión de pedidos</h1></div>
+  {% if usuario.rol=='admin' %}{% include 'admin/_nav.html' %}{% endif %}
+  <div class="admin-nav">
+    <a href="{{ url_for('admin_pedidos') }}" class="{{ 'on' if not filtro }}">Todos</a>
+    {% for e in ESTATUS %}<a href="{{ url_for('admin_pedidos', {estatus: e}) }}" class="{{ 'on' if filtro==e }}">{{ ESTATUS_LABEL[e] }}</a>{% endfor %}
+  </div>
+  <div class="panel table-wrap"><table class="t">
+    <tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Modalidad</th><th>Total</th><th>Pago</th><th>Estatus</th><th>Cambiar</th></tr>
+    {% for p in pedidos %}<tr>
+      <td><a href="{{ url_for('pedido_detalle', {pid: p.id_pedido}) }}"><b>{{ '%05d'|format(p.id_pedido) }}</b></a></td><td>{{ p.fecha|fecha }}</td>
+      <td>{{ p.nombre }}<br><span class="small muted">{{ p.telefono }}</span></td>
+      <td>{{ '🛵 ' ~ (p.zona or '') if p.modalidad=='domicilio' else '🏪 Apartado' }}</td><td><b>{{ p.total|money }}</b></td><td>{{ p.metodo_pago }}</td>
+      <td><span class="st {{ p.estatus }}">{{ ESTATUS_LABEL[p.estatus] }}</span></td>
+      <td><form method="post" action="{{ url_for('admin_pedido_estatus', {pid: p.id_pedido}) }}" class="inline-form">
+        <select name="estatus">{% for e in ESTATUS %}<option value="{{ e }}" {{ 'selected' if e==p.estatus }}>{{ ESTATUS_LABEL[e] }}</option>{% endfor %}</select>
+        <button class="btn btn-sm">OK</button></form></td></tr>
+    {% else %}<tr><td colspan="8" class="center muted">Sin pedidos.</td></tr>{% endfor %}
+  </table></div>
+</div>
+{% endblock %}

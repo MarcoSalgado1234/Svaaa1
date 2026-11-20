@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Mis pedidos{% endblock %}
+{% block content %}
+<div class="container" style="padding-bottom:3rem">
+  <div class="page-head"><h1>Historial de pedidos</h1></div>
+  {% if pedidos %}
+  <div class="panel table-wrap"><table class="t">
+    <tr><th>#</th><th>Fecha</th><th>Modalidad</th><th>Total</th><th>Estatus</th><th></th></tr>
+    {% for p in pedidos %}<tr>
+      <td>{{ '%05d'|format(p.id_pedido) }}</td><td>{{ p.fecha|fecha }}</td>
+      <td>{{ '🛵 Domicilio' if p.modalidad=='domicilio' else '🏪 Apartado' }}</td><td><b>{{ p.total|money }}</b></td>
+      <td><span class="st {{ p.estatus }}">{{ ESTATUS_LABEL[p.estatus] }}</span></td>
+      <td><a class="btn btn-sm btn-outline" href="{{ url_for('pedido_detalle', {pid: p.id_pedido}) }}">Ver</a></td></tr>{% endfor %}
+  </table></div>
+  {% else %}<div class="empty"><h3>Aún no tienes pedidos</h3><a class="btn mt" href="{{ url_for('catalogo') }}">Comprar ahora</a></div>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Iniciar sesión{% endblock %}
+{% block content %}
+<div class="container auth">
+  <div class="panel">
+    <h2>Iniciar sesión</h2>
+    <p class="muted mb">Accede para apartar, pedir a domicilio y ver tus pedidos.</p>
+    <form method="post">
+      <input type="hidden" name="next" value="{{ request.args.get('next','') }}">
+      <label class="f">Correo electrónico</label><input type="email" name="email" required autofocus>
+      <label class="f">Contraseña</label><input type="password" name="password" required>
+      <button class="btn btn-block mt">Entrar</button>
+    </form>
+    <p class="small center mt muted">¿Primera vez? <a href="{{ url_for('registro') }}"><b>Crea tu cuenta</b></a></p>
+  </div>
+</div>
+{% endblock %}

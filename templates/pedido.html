@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Pedido #{{ ped.id_pedido }}{% endblock %}
+{% block content %}
+{% set flujo = ['recibido','preparando','en_camino','entregado'] if ped.modalidad=='domicilio' else ['recibido','preparando','entregado'] %}
+{% set idx = flujo.indexOf(ped.estatus) if ped.estatus in flujo else -1 %}
+<div class="container" style="padding-bottom:3rem">
+  <div class="page-head">
+    <h1>Pedido #{{ '%05d'|format(ped.id_pedido) }}</h1>
+    <p class="muted">{{ ped.fecha|fecha }} · <span class="st {{ ped.estatus }}">{{ ESTATUS_LABEL[ped.estatus] }}</span></p>
+  </div>
+  {% if request.args.get('ok') or ped.estatus=='recibido' %}<div class="notice ok">✅ Compra registrada. Te avisaremos cada cambio de estatus aquí.</div>{% endif %}
+
+  {% if ped.estatus != 'cancelado' %}
+  <div class="panel mb"><div class="track">
+    {% for s in flujo %}
+    <div class="step {{ 'done' if loop.index0 <= idx }} {{ 'now' if loop.index0 == idx }}"><i>{{ '✓' if loop.index0 <= idx else loop.index }}</i>
+      {{ ESTATUS_LABEL[s] if not (s=='entregado' and ped.modalidad=='apartado') else 'Listo / recogido' }}</div>
+    {% endfor %}
+  </div></div>
+  {% endif %}
+
+  <div class="two">
+    <div class="panel">
+      <h3 class="mb">Productos</h3>
+      <div class="table-wrap"><table class="t">
+        <tr><th>Producto</th><th>Cant.</th><th>P. unit.</th><th>Importe</th></tr>
+        {% for d in det %}<tr><td>{{ d.emoji }} {{ d.nombre }} {% if d.mayoreo %}<span class="tag green">Mayoreo</span>{% endif %}</td>
+          <td>{{ d.cantidad }} {{ d.tipo_unidad }}{{ 's' if d.cantidad>1 }}</td><td>{{ d.precio_unitario|money }}</td><td>{{ d.importe|money }}</td></tr>{% endfor %}
+      </table></div>
+      <div class="summary mt">
+        <div class="r"><span>Subtotal</span><span>{{ ped.subtotal|money }}</span></div>
+        <div class="r"><span>Descuentos</span><span>-{{ ped.descuento|money }}</span></div>
+        <div class="r"><span>Envío</span><span>{{ ped.costo_envio|money }}</span></div>
+        <div class="r tot"><span>Total</span><span>{{ ped.total|money }}</span></div>
+      </div>
+    </div>
+    <div style="display:grid;gap:1.2rem;align-content:start">
+      <div class="panel"><h3 class="mb">Entrega</h3>
+        {% if ped.modalidad=='domicilio' %}
+          <p><b>🛵 A domicilio</b></p><p>{{ ped.calle }} {{ ped.numero }}, {{ ped.colonia }}<br>C.P. {{ ped.codigo_postal }} · {{ ped.zona }}</p>
+          <p class="small muted">Tiempo estimado: ~{{ ped.tiempo_min }} min</p>
+        {% else %}<p><b>🏪 Recoger en tienda</b></p><p class="small muted">Presenta tu número de pedido e identificación oficial.</p>{% endif %}
+        <p class="mt"><b>Pago:</b> {{ ped.metodo_pago|capitalize }}</p>
+      </div>
+      <div class="panel"><h3 class="mb">Historial</h3>
+        {% for h in hist %}<p class="small"><span class="st {{ h.estatus }}">{{ ESTATUS_LABEL[h.estatus] }}</span> {{ h.fecha|fecha }}</p>{% endfor %}
+      </div>
+      {% if ped.estatus=='recibido' and ped.id_usuario==usuario.id_usuario %}
+      <form method="post" action="{{ url_for('pedido_cancelar', {pid: ped.id_pedido}) }}" onsubmit="return confirm('¿Cancelar este pedido?')">
+        <button class="btn btn-outline btn-block" style="color:var(--red)">Cancelar pedido</button></form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Productos · Admin{% endblock %}
+{% block content %}
+<div class="container" style="padding-bottom:3rem">
+  <div class="page-head" style="padding-bottom:0"><h1>Productos</h1></div>
+  {% include 'admin/_nav.html' %}
+  <div class="results-bar"><span class="muted">{{ productos|length }} productos registrados</span><a class="btn btn-sm" href="{{ url_for('admin_producto_nuevo') }}">+ Nuevo producto</a></div>
+  <div class="panel table-wrap"><table class="t">
+    <tr><th>Producto</th><th>Categoría</th><th>Origen</th><th>Pieza</th><th>Caja</th><th>Mayoreo</th><th>Stock</th><th>Estado</th><th></th></tr>
+    {% for p in productos %}<tr>
+      <td>{{ p.emoji }} <b>{{ p.nombre }}</b><br><span class="small muted">{{ p.marca }}</span></td><td>{{ p.categoria }}</td><td>{{ p.origen }}</td>
+      <td>{{ p.precio|money }}</td><td>{{ p.precio_caja|money }}</td><td>{{ p.precio_caja_mayoreo|money }}</td>
+      <td>{% if p.stock <= p.stock_minimo %}<span class="tag red">{{ p.stock }}</span>{% else %}{{ p.stock }}{% endif %}</td>
+      <td>{% if p.activo %}<span class="tag green">Activo</span>{% else %}<span class="tag">Inactivo</span>{% endif %}</td>
+      <td><div class="inline-form"><a class="btn btn-sm btn-outline" href="{{ url_for('admin_producto_editar', {pid: p.id_producto}) }}">Editar</a>
+        <form method="post" action="{{ url_for('admin_producto_alternar', {pid: p.id_producto}) }}"><button class="btn btn-sm btn-outline">{{ 'Desactivar' if p.activo else 'Activar' }}</button></form></div></td>
+    </tr>{% endfor %}
+  </table></div>
+</div>
+{% endblock %}

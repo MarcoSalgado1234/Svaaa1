@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Abarrotes Martínez{% endblock %} · SVAAA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', {filename: 'css/style.css'}) }}">
+</head>
+<body>
+  <div id="ageGate" class="gate hidden">
+    <div class="box">
+      <div class="big">🔞</div>
+      <h2>¿Eres mayor de 18 años?</h2>
+      <p class="muted mt" id="ageMsg">La venta de bebidas alcohólicas está restringida a mayores de edad. Confirma tu edad para continuar.</p>
+      <div class="acts">
+        <button class="btn" id="ageYes">Sí, soy mayor de edad</button>
+        <button class="btn btn-outline" id="ageNo">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="topbar"><div class="container">
+    <span>📍 Abarrotes Martínez · Saltillo, Coah.</span>
+    <span>Mayoreo desde <b>3 cajas</b> · Apartado en tienda · Envío a domicilio</span>
+  </div></div>
+
+  <header class="nav"><div class="container">
+    <a href="{{ url_for('inicio') }}" class="logo"><span class="mark">AM</span><div>Abarrotes Martínez<small>SVAAA</small></div></a>
+    <form class="nav-search" action="{{ url_for('catalogo') }}">
+      <input name="q" placeholder="Buscar cerveza, marca…" aria-label="Buscar">
+      <button aria-label="Buscar">🔍</button>
+    </form>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menú">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="{{ url_for('catalogo') }}">Catálogo</a>
+      <a href="{{ url_for('catalogo', {categoria: 2}) }}">Artesanales</a>
+      <a href="{{ url_for('comparar') }}">Comparar{% if n_comparar %}<span class="badge">{{ n_comparar }}</span>{% endif %}</a>
+      {% if usuario %}
+        {% if usuario.rol in ('admin','repartidor') %}<a href="{{ url_for('admin_panel' if usuario.rol=='admin' else 'admin_pedidos') }}">Panel</a>{% endif %}
+        <a href="{{ url_for('mis_pedidos') }}">Mis pedidos</a>
+        <a href="{{ url_for('perfil') }}">{{ usuario.nombre.split()[0] }}</a>
+        <a href="{{ url_for('logout') }}">Salir</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Entrar</a>
+        <a href="{{ url_for('registro') }}" class="btn btn-sm">Registrarme</a>
+      {% endif %}
+      <a href="{{ url_for('carrito') }}" class="btn btn-dark btn-sm">🛒 Carrito{% if n_carrito %}<span class="badge">{{ n_carrito }}</span>{% endif %}</a>
+    </nav>
+  </div></header>
+
+    <div class="flashes">
+    {% set msgs = get_flashed_messages({with_categories: true}) %}
+    {% for cat, m in msgs %}
+      <div class="flash {{ cat }}">{{ m }}</div>
+    {% endfor %}
+  </div>
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer><div class="container">
+    <div class="cols">
+      <div><h4>Abarrotes Martínez</h4>
+        <p>Abarrotes, bebidas y expendio de cerveza: comerciales, artesanales e internacionales. Apartado en tienda, entrega a domicilio y precios de mayoreo.</p></div>
+      <div><h4>Tienda</h4>
+        <p><a href="{{ url_for('catalogo') }}">Catálogo</a></p>
+        <p><a href="{{ url_for('catalogo', {categoria: 2}) }}">Cerveza artesanal</a></p>
+        <p><a href="{{ url_for('comparar') }}">Comparador</a></p></div>
+      <div><h4>Cuenta</h4>
+        <p><a href="{{ url_for('mis_pedidos') }}">Mis pedidos</a></p>
+        <p><a href="{{ url_for('carrito') }}">Carrito</a></p></div>
+    </div>
+    <div class="legal">
+      <span><b>EL ABUSO DEL ALCOHOL ES NOCIVO PARA LA SALUD.</b> Venta exclusiva a mayores de 18 años.</span>
+      <span>© {{ anio }} SVAAA · Aviso de privacidad</span>
+    </div>
+  </div></footer>
+  <script src="{{ url_for('static', {filename: 'js/main.js'}) }}"></script>
+</body>
+</html>

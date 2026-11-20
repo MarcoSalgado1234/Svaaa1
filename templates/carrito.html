@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Carrito{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Tu carrito</h1></div>
+  {% if c.lineas %}
+  <div class="cart-layout">
+    <div class="panel">
+      {% for l in c.lineas %}
+      <div class="line">
+        <div class="e">{{ l.p.emoji }}</div>
+        <div>
+          <b><a href="{{ url_for('producto', {pid: l.p.id_producto}) }}">{{ l.p.nombre }}</a></b>
+          <div class="small muted">{{ l.etiqueta }} · {{ l.pu|money }} c/u · {{ l.piezas }} pzas</div>
+          {% if l.mayoreo %}<span class="tag green">Precio de mayoreo aplicado</span>{% endif %}
+          {% if l.sin_stock %}<span class="tag red">Sin existencia suficiente ({{ l.p.stock }} disp.)</span>{% endif %}
+          <form method="post" action="{{ url_for('carrito_actualizar') }}" class="inline-form" style="margin-top:.4rem">
+            <input type="hidden" name="id" value="{{ l.p.id_producto }}"><input type="hidden" name="tipo" value="{{ l.tipo }}">
+            <input type="number" name="cant" value="{{ l.cant }}" min="0" style="width:75px">
+            <button class="btn btn-sm btn-outline">Actualizar</button>
+            <button class="btn btn-sm btn-outline" name="cant" value="0" style="color:var(--red)">Quitar</button>
+          </form>
+        </div>
+        <div class="price">{{ l.importe|money }}</div>
+      </div>
+      {% endfor %}
+      <p class="mt"><a class="small muted" href="{{ url_for('carrito_vaciar') }}">Vaciar carrito</a></p>
+    </div>
+    <aside class="panel summary">
+      <h3 class="mb">Resumen</h3>
+      <div class="r"><span>Subtotal</span><span>{{ c.subtotal|money }}</span></div>
+      <div class="r" style="color:var(--green)"><span>Descuentos</span><span>-{{ c.descuento|money }}</span></div>
+      <div class="r muted"><span>Envío</span><span>Se calcula al pagar</span></div>
+      <div class="r tot"><span>Total</span><span>{{ c.total|money }}</span></div>
+      <div class="notice small">💡 Con {{ min_cajas }} o más cajas del mismo producto obtienes precio de mayoreo.</div>
+      {% if c.hay_error %}<div class="notice bad small">Hay productos sin existencia suficiente. Ajusta las cantidades.</div>{% endif %}
+      <a class="btn btn-block {{ 'btn-dark' if not c.hay_error }}" {% if c.hay_error %}disabled{% endif %} href="{{ url_for('checkout') }}">Continuar →</a>
+    </aside>
+  </div>
+  {% else %}
+  <div class="empty mb"><h3>Tu carrito está vacío</h3><p class="muted mb">Agrega productos del catálogo.</p><a class="btn" href="{{ url_for('catalogo') }}">Ver catálogo</a></div>
+  {% endif %}
+</div>
+{% endblock %}

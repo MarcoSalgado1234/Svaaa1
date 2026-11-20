@@ -1,0 +1,10 @@
+<nav class="admin-nav">
+  {% set ep = request.endpoint %}
+  <a href="{{ url_for('admin_panel') }}" class="{{ 'on' if ep=='admin_panel' }}">📊 Panel</a>
+  <a href="{{ url_for('admin_productos') }}" class="{{ 'on' if ep and ep.startsWith('admin_producto') }}">🍺 Productos</a>
+  <a href="{{ url_for('admin_inventario') }}" class="{{ 'on' if ep=='admin_inventario' }}">📦 Inventario</a>
+  <a href="{{ url_for('admin_pedidos') }}" class="{{ 'on' if ep=='admin_pedidos' }}">🧾 Pedidos</a>
+  <a href="{{ url_for('admin_zonas') }}" class="{{ 'on' if ep=='admin_zonas' }}">🗺️ Zonas de envío</a>
+  <a href="{{ url_for('admin_promociones') }}" class="{{ 'on' if ep=='admin_promociones' }}">🏷️ Promociones</a>
+  <a href="{{ url_for('admin_reportes') }}" class="{{ 'on' if ep=='admin_reportes' }}">📈 Reportes</a>
+</nav>

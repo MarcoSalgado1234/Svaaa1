@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Mi perfil{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Mi perfil</h1></div>
+  <div class="two" style="padding-bottom:3rem">
+    <div class="panel">
+      <h3 class="mb">Datos personales</h3>
+      <form method="post">
+        <label class="f">Nombre</label><input name="nombre" value="{{ usuario.nombre }}" required>
+        <label class="f">Correo</label><input value="{{ usuario.email }}" disabled>
+        <label class="f">Teléfono</label><input name="telefono" value="{{ usuario.telefono or '' }}">
+        <label class="f">Nueva contraseña (opcional)</label><input type="password" name="password" minlength="8">
+        <button class="btn mt">Guardar cambios</button>
+      </form>
+    </div>
+    <div class="panel">
+      <h3 class="mb">Direcciones guardadas</h3>
+      {% for d in direcciones %}
+      <p><b>{{ d.calle }} {{ d.numero }}</b>, {{ d.colonia }}, C.P. {{ d.codigo_postal }}<br><span class="small muted">{{ d.referencias }}</span></p><hr style="border:0;border-top:1px solid var(--line);margin:.7rem 0">
+      {% else %}<p class="muted">Aún no tienes direcciones. Se guardan al hacer un pedido a domicilio.</p>{% endfor %}
+      <p class="small muted">Rol de cuenta: <span class="tag">{{ usuario.rol }}</span></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

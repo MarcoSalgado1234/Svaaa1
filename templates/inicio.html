@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import card %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
+<section class="hero"><div class="container">
+  <div>
+    <span class="tag amber">Abarrotes · Cervezas · Mayoreo</span>
+    <h1 class="mt">Tu cerveza fría, <em>sin filas</em> y sin esperas.</h1>
+    <p>Aparta en tienda, pide a domicilio o compra por caja con precio de mayoreo. Descubre cervezas artesanales e internacionales con fichas completas.</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('catalogo') }}" class="btn btn-amber">Ver catálogo</a>
+      <a href="{{ url_for('catalogo', {categoria: 2}) }}" class="btn btn-outline" style="color:#fff;border-color:#fff">Explorar artesanales</a>
+    </div>
+  </div>
+  <div class="hero-art">
+    <div><span class="e">🍺</span><span class="t">Comerciales</span></div>
+    <div><span class="e">🍻</span><span class="t">Artesanales</span></div>
+    <div><span class="e">🌍</span><span class="t">Internacionales</span></div>
+    <div><span class="e">📦</span><span class="t">Mayoreo 3+ cajas</span></div>
+  </div>
+</div></section>
+
+<div class="container stats">
+  <div class="stat"><b>3+ cajas</b><span>Precio de mayoreo automático</span></div>
+  <div class="stat"><b>Apartado</b><span>Recoge sin hacer fila</span></div>
+  <div class="stat"><b>A domicilio</b><span>Con validación de cobertura</span></div>
+  <div class="stat"><b>En vivo</b><span>Seguimiento de tu pedido</span></div>
+</div>
+
+<div class="container">
+  <section class="block">
+    <div class="section-head"><div><h2>Promociones vigentes</h2><p>Ofertas activas en la tienda</p></div></div>
+    <div class="promo-strip">
+      {% for pr in promos %}
+      <div class="promo {% if loop.first %}big{% endif %}">
+        <h3>{{ pr.titulo }}{% if pr.porcentaje > 0 %} · {{ pr.porcentaje|int }}%{% endif %}</h3>
+        <p>{{ pr.descripcion }}</p>
+      </div>
+      {% else %}<p class="muted">No hay promociones activas por el momento.</p>{% endfor %}
+    </div>
+  </section>
+
+  {% if recomendados %}
+  <section class="block">
+    <div class="section-head"><div><h2>Recomendados para ti</h2><p>Basado en lo que has visto y comprado</p></div></div>
+    <div class="grid">{% for p in recomendados %}{{ card(p) }}{% endfor %}</div>
+  </section>
+  {% endif %}
+
+  <section class="block">
+    <div class="section-head"><div><h2>Las de siempre</h2><p>Marcas comerciales favoritas</p></div>
+      <a class="btn btn-outline btn-sm" href="{{ url_for('catalogo') }}">Ver todo →</a></div>
+    <div class="grid">{% for p in destacados %}{{ card(p) }}{% endfor %}</div>
+  </section>
+
+  <section class="block">
+    <div class="section-head"><div><h2>Artesanales mexicanas</h2><p>Sabores con carácter, hechas por cerveceros locales</p></div>
+      <a class="btn btn-outline btn-sm" href="{{ url_for('catalogo', {categoria: 2}) }}">Ver más →</a></div>
+    <div class="grid">{% for p in artesanales %}{{ card(p) }}{% endfor %}</div>
+  </section>
+
+  <section class="block">
+    <div class="section-head"><div><h2>Internacionales</h2><p>Alemania, Irlanda, Bélgica y más</p></div>
+      <a class="btn btn-outline btn-sm" href="{{ url_for('catalogo', {categoria: 3}) }}">Ver más →</a></div>
+    <div class="grid">{% for p in internacionales %}{{ card(p) }}{% endfor %}</div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Panel administrativo{% endblock %}
+{% block content %}
+<div class="container" style="padding-bottom:3rem">
+  <div class="page-head" style="padding-bottom:0"><h1>Panel administrativo</h1></div>
+  {% include 'admin/_nav.html' %}
+  <div class="kpis">
+    <div class="kpi"><span>Ventas totales</span><b>{{ kpi.ventas|money }}</b></div>
+    <div class="kpi"><span>Pedidos totales</span><b>{{ kpi.pedidos }}</b></div>
+    <div class="kpi"><span>Ventas hoy</span><b>{{ hoy.ventas|money }}</b></div>
+    <div class="kpi"><span>Pedidos pendientes</span><b>{{ pendientes }}</b></div>
+    <div class="kpi warn"><span>Alertas de stock bajo</span><b>{{ bajos|length }}</b></div>
+  </div>
+  <div class="two">
+    <div class="panel"><h3 class="mb">⚠️ Stock bajo</h3>
+      {% if bajos %}<div class="table-wrap"><table class="t"><tr><th>Producto</th><th>Existencia</th><th>Mínimo</th></tr>
+        {% for p in bajos %}<tr><td>{{ p.emoji }} {{ p.nombre }}</td><td><span class="tag red">{{ p.stock }}</span></td><td>{{ p.stock_minimo }}</td></tr>{% endfor %}</table></div>
+      <a class="btn btn-sm mt" href="{{ url_for('admin_inventario') }}">Reabastecer</a>
+      {% else %}<p class="muted">Todo el inventario está por encima del mínimo. 👍</p>{% endif %}
+    </div>
+    <div class="panel"><h3 class="mb">Pedidos recientes</h3>
+      {% for p in recientes %}<p class="small" style="padding:.4rem 0;border-bottom:1px solid var(--line)">
+        <a href="{{ url_for('pedido_detalle', {pid: p.id_pedido}) }}"><b>#{{ '%05d'|format(p.id_pedido) }}</b></a> {{ p.nombre }} · {{ p.total|money }}
+        <span class="st {{ p.estatus }}" style="float:right">{{ ESTATUS_LABEL[p.estatus] }}</span></p>
+      {% else %}<p class="muted">Aún no hay pedidos.</p>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
